@@ -760,6 +760,10 @@ public:
     /// Caution, this function has not been tested by us.
     void enableTCXO();
 
+	
+    void setPin(uint8_t pin, bool state);
+	
+
 protected:
     /// This is a low level function to handle the interrupts for one instance of RH_RF95.
     /// Called automatically by isr*()

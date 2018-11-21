@@ -8,14 +8,14 @@
 
 // Dragino Raspberry PI hat
 // see https://github.com/dragino/Lora
-#define BOARD_DRAGINO_PIHAT
+#define BOARD_LORASPI
 
 // Now we include RasPi_Boards.h so this will expose defined 
 // constants with CS/IRQ/RESET/on board LED pins definition
 #include "RasPiBoards.h"
 
 // RFM95 Default Configuration 
-#define RF_FREQUENCY  868.00
+#define RF_FREQUENCY  434.00
 #define RF_GATEWAY_ID 1 
 #define RF_NODE_ID    10
 
@@ -150,6 +150,10 @@ int _managerInit(int address) {
                 printf("Init Failed\n");
 }
 
+void _setThisAddress(uint8_t thisAddress) {
+	manager->setThisAddress(thisAddress);
+}
+
 int _recvfromAck(char* buf, uint8_t* len, uint8_t* from) {
 	uint8_t buf2[RH_RF95_MAX_MESSAGE_LEN];
 	uint8_t len2 = sizeof(buf2);
@@ -230,6 +234,9 @@ int _setModeRx() {
 	return 0;
 }
 
+void _setPin(uint8_t pin, bool state) {
+	radio.setPin(pin, state);
+}
 
 extern "C" {
         extern int init() {
@@ -291,6 +298,10 @@ extern "C" {
 	extern int managerInit(int address) {		
 		return _managerInit(address);
 	}
+	
+	extern void setThisAddress(uint8_t thisAddress) {
+		_setThisAddress(thisAddress);
+	}
 
 	extern int recvfromAck(char* buf, uint8_t* len, uint8_t* from) {
 		return _recvfromAck(buf, len, from);
@@ -334,5 +345,9 @@ extern "C" {
 	
 	extern int setModeRx() {
 		return _setModeRx();
+	}
+	
+	extern void setPin(int8_t pin, bool state) {
+		_setPin(pin, state);
 	}
 }

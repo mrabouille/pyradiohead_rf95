@@ -9,10 +9,10 @@
 //==============
 // see https://github.com/hallard/LoRasPI
 #if defined (BOARD_LORASPI)
-#define RF_LED_PIN RPI_V2_GPIO_P1_16 // Led on GPIO23 so P1 connector pin #16
-#define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on CE0 so P1 connector pin #24
+#define RF_LED_PIN RPI_V2_GPIO_P1_15 // Led on GPIO22 so P1 connector pin #15
+#define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on CE0 so GPIO8 P1 connector pin #24
 #define RF_IRQ_PIN RPI_V2_GPIO_P1_22 // IRQ on GPIO25 so P1 connector pin #22
-#define RF_RST_PIN RPI_V2_GPIO_P1_15 // IRQ on GPIO22 so P1 connector pin #15
+#define RF_RST_PIN RPI_V2_GPIO_P1_18 // IRQ on GPIO24 so P1 connector pin #18
 
 
 // Raspberri PI Lora Gateway Board iC880A and LinkLab Lora Gateway Shield (if RF module plugged into)

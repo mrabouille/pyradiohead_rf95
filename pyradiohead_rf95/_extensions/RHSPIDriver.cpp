@@ -27,6 +27,14 @@ bool RHSPIDriver::init()
     return true;
 }
 
+void RHSPIDriver::pinWrite(uint8_t pin, bool state)
+{
+	pinMode(pin, OUTPUT);
+	ATOMIC_BLOCK_START;
+    digitalWrite(pin, state);
+	ATOMIC_BLOCK_END;
+}
+
 uint8_t RHSPIDriver::spiRead(uint8_t reg)
 {
     uint8_t val;

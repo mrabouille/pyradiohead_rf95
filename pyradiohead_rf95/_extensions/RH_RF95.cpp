@@ -579,3 +579,8 @@ void RH_RF95::enableTCXO()
 	spiWrite(RH_RF95_REG_4B_TCXO, (spiRead(RH_RF95_REG_4B_TCXO) | RH_RF95_TCXO_TCXO_INPUT_ON));
     } 
 }
+
+void RH_RF95::setPin(uint8_t pin, bool state)
+{
+	pinWrite(pin, state);
+}

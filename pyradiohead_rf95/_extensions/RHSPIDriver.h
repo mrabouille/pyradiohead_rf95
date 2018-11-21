@@ -64,6 +64,9 @@ public:
     /// Make sure the Driver is properly configured before calling init().
     /// \return true if initialisation succeeded.
     bool init();
+	
+	
+	void pinWrite(uint8_t pin, bool state);
 
     /// Reads a single register from the SPI device
     /// \param[in] reg Register number
