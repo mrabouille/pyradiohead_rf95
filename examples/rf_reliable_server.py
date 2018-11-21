@@ -7,7 +7,7 @@ CLIENT_ADDRESS = 1
 SERVER_ADDRESS = 2
 
 rf95 = RF95()
-
+rf95.init()
 rf95.manager_init(SERVER_ADDRESS)
 
 rf95.set_frequency(868)

@@ -44,27 +44,27 @@ class RF95:
         if r != 0:
             raise RuntimeError("RF95 init failed - value: %i" % r)
 
-        def set_tx_power(self, power, useRFO):
-            radiohead.setTxPower(power, useRFO)
+    def set_tx_power(self, power, useRFO):
+        radiohead.setTxPower(power, useRFO)
 
-        def set_frequency(self, centre):
-            r = radiohead.setFrequency(centre)
-            return r
+    def set_frequency(self, centre):
+        r = radiohead.setFrequency(centre)
+        return r
 
-        def set_spreading_factor(self, sf):
-            radiohead.setSpreadingFactor(sf)
+    def set_spreading_factor(self, sf):
+        radiohead.setSpreadingFactor(sf)
 
-        def set_signal_bandwidth(self, sbw):
-            radiohead.setSignalBandwidth(sbw)
+    def set_signal_bandwidth(self, sbw):
+        radiohead.setSignalBandwidth(sbw)
 
-        def set_coding_rate4(seld, denominator):
-            radiohead.setCodingRate4(denominator)
+    def set_coding_rate4(seld, denominator):
+        radiohead.setCodingRate4(denominator)
 
     def manager_init(self, address):
         radiohead.managerInit(address)
 
     def send(self, data, l):
-        r = radiohead.send(data, l)
+        r = radiohead.send(bytes(data), l)
         if r != 0:
             raise RuntimeError("nRF24 send failed")
 
