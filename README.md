@@ -11,8 +11,8 @@ bcm2835 have to be installed first, with the following steps (up to you to chang
 ```bash
 cd /tmp/
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.57.tar.gz .
-tar zxvf bcm2835-1.xx.tar.gz
-cd bcm2835-1.xx
+tar zxvf bcm2835-1.57.tar.gz
+cd bcm2835-1.57
 ./configure
 make
 sudo make check
