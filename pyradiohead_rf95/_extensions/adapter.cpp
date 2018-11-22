@@ -126,6 +126,22 @@ int _maxMessageLength() {
 	return radio.maxMessageLength();
 }
 
+int _headerFrom() {
+	return radio.headerFrom();
+}
+
+int _headerTo() {
+	return radio.headerTo();
+}
+
+int _headerId() {
+	return radio.headerId();
+}
+
+int _headerFlags() {
+	return radio.headerFlags();
+}
+
 int _printRegisters() {
 	bool b = radio.printRegisters();
 	if (b) return 0;
@@ -154,33 +170,45 @@ void _setThisAddress(uint8_t thisAddress) {
 	manager->setThisAddress(thisAddress);
 }
 
-int _recvfromAck(char* buf, uint8_t* len, uint8_t* from) {
+int _recvfromAck(char* buf, uint8_t* len, uint8_t* from, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL) {
 	uint8_t buf2[RH_RF95_MAX_MESSAGE_LEN];
 	uint8_t len2 = sizeof(buf2);
 	uint8_t from2;
+	uint8_t to2;
+	uint8_t id2;
+	uint8_t flags2;
 		
-	bool b = manager->recvfromAck(buf2, &len2, &from2);
+	bool b = manager->recvfromAck(buf2, &len2, &from2, &to2, &id2, &flags2);
 	//printf("Received : %s (%d) (from %d)\n", (char*)buf2, len2, from2);
 	strcpy(buf, (char*)buf2);
 	*len = len2; 	
 	*from = from2;
+	*to=to2;
+	*id=id2;
+	*flags=flags2;
 
 	if (b) return *len;
 	else return -1;
 }
 
-int _recvfromAckTimeout(char* buf, uint8_t* len, uint16_t timeout, uint8_t* from) {
+int _recvfromAckTimeout(char* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL) {
 	uint8_t buf2[RH_RF95_MAX_MESSAGE_LEN];
 	uint8_t len2 = sizeof(buf2);
 	uint8_t from2;
+	uint8_t to2;
+	uint8_t id2;
+	uint8_t flags2;
 
-	bool b = manager->recvfromAckTimeout(buf2, &len2, timeout, &from2);
+	bool b = manager->recvfromAckTimeout(buf2, &len2, timeout, &from2, &to2, &id2, &flags2);
 
 	if (b) {
 		//printf("Received : %s (%d) (from %d)\n", (char*)buf2, len2, from2);
 		strcpy(buf, (char*)buf2);
 		*len = len2; 	
 		*from = from2;
+		*to=to2;
+		*id=id2;
+		*flags=flags2;
 		return *len;
 	}
 
@@ -287,6 +315,22 @@ extern "C" {
 		return _maxMessageLength();
 	}
 
+	extern int headerFrom() {
+		return _headerFrom();
+	}
+
+	extern int headerTo() {
+		return _headerTo();
+	}
+
+	extern int headerId() {
+		return _headerId();
+	}
+
+	extern int headerFlags() {
+		return _headerFlags();
+	}
+
 	extern int printRegisters() {
 		return _printRegisters();
 	}
@@ -303,12 +347,12 @@ extern "C" {
 		_setThisAddress(thisAddress);
 	}
 
-	extern int recvfromAck(char* buf, uint8_t* len, uint8_t* from) {
-		return _recvfromAck(buf, len, from);
+	extern int recvfromAck(char* buf, uint8_t* len, uint8_t* from, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL) {
+		return _recvfromAck(buf, len, from, to, id, flags);
 	}
 
-	extern int recvfromAckTimeout(char* buf, uint8_t* len, uint16_t timeout, uint8_t* from) {
-		return _recvfromAckTimeout(buf, len, timeout, from);
+	extern int recvfromAckTimeout(char* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL) {
+		return _recvfromAckTimeout(buf, len, timeout, from, to, id, flags);
 	}
 
 	extern int sendtoWait(uint8_t* data, uint8_t len, uint8_t dst) {
