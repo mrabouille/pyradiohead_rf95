@@ -5,39 +5,26 @@ import os
 from ._radiohead_cffi import ffi
 from ._radiohead_cffi import lib as radiohead
 
-buf = ffi.new("char*")
-l = ffi.new("uint8_t*")
-l[0] = 0
-src = ffi.new("uint8_t*")
-src[0] = 0
-
+buffer_ = ffi.new("char*")
+length_ = ffi.new("uint8_t*")
+length_[0] = 0
+from_ = ffi.new("uint8_t*")
+from_[0] = 0
+to_ = ffi.new("uint8_t*")
+to_[0] = 0
+id_ = ffi.new("uint8_t*")
+id_[0] = 0
+flag_ = ffi.new("uint8_t*")
+flag_[0] = 0
 
 class RF95:
 
     # Bandwidth values
-    bandwidth7_k8_hz = 7800
-    bandwidth10_k4_hz = 10400
-    bandwidth15_k6_hz = 15600
-    bandwidth20_k8_hz = 20800
-    bandwidth31_k25_hz = 31250
-    bandwidth41_k7_hz = 41700
-    bandwidth62_k5_hz = 62500
-    bandwidth125_khz = 125000
-    bandwidth250_khz = 250000
-    bandwidth500_khz = 500000
+    available_bandwidth = 7800, 10400, 15600, 20800, 31250, 41700, 62500, 125000, 250000, 500000
     # Spreading factor values
-    spreading_factor6 = 6
-    spreading_factor7 = 7
-    spreading_factor8 = 8
-    spreading_factor9 = 9
-    spreading_factor10 = 10
-    spreading_factor11 = 11
-    spreading_factor12 = 12
+    available_spreading_factor = 6, 7, 8, 9, 10, 11, 12
     # Coding rate denominator values
-    coding_rate4_5 = 5
-    coding_rate4_6 = 6
-    coding_rate4_7 = 7
-    coding_rate4_8 = 8
+    available_coding_rate4 = 5, 6, 7, 8
 
     def init(self):
         r = radiohead.init()
@@ -55,16 +42,20 @@ class RF95:
         radiohead.setSpreadingFactor(sf)
 
     def set_signal_bandwidth(self, sbw):
+        if sbw not in self.available_bandwidth:
+            raise ValueError("Bandwidth not allowed. See RH95.available_bandwidth")
         radiohead.setSignalBandwidth(sbw)
 
-    def set_coding_rate4(seld, denominator):
+    def set_coding_rate4(self, denominator):
+        if denominator not in self.available_coding_rate4:
+            raise ValueError("denominator not allowed. See RH95.available_coding_rate4")
         radiohead.setCodingRate4(denominator)
 
     def manager_init(self, address):
         radiohead.managerInit(address)
 
-    def send(self, data, l):
-        r = radiohead.send(bytes(data), l)
+    def send(self, data, length_):
+        r = radiohead.send(data, length_)
         if r != 0:
             raise RuntimeError("nRF24 send failed")
 
@@ -75,15 +66,11 @@ class RF95:
         radiohead.waitAvailableTimeout()
 
     def available(self):
-        b = radiohead.available()
-        if b == 1:
-            return True
-        else:
-            return False
+        return bool(radiohead.available())
 
     def recv(self):
-        radiohead.recv(buf, l)
-        return (ffi.string(buf), l[0])
+        radiohead.recv(buffer_, length_)
+        return (ffi.string(buffer_), length_[0])
 
     def max_message_length(self):
         return radiohead.maxMessageLength()
@@ -94,19 +81,36 @@ class RF95:
     def sleep(self):
         radiohead.enterSleepMode()
 
-    def recvfrom_ack(self):
-        radiohead.recvfromAck(buf, l, src)
-        return (ffi.string(buf), l[0], src[0])
+    def recvfrom_ack(self, ask_dst=True, ask_id=True, ask_flag=False):
+        _to = _id = _flag = ffi.NULL
+        if ask_dst:
+            _to = to_
+        if ask_id:
+            _id = id_
+        if ask_flag:
+            _flag = flag_
+        received = radiohead.recvfromAck(buffer_, length_, from_, _to, _id, _flag)
+        if received:
+            extras = [extra[0] for extra in [to_, id_, flag_] if extra != ffi.NULL]
+            return (ffi.string(buffer_), length_[0], from_[0], *extras)
+        raise ValueError("No valid message copied to the buffer")
 
-    def recvfrom_ack_timeout(self, timeout):
-        ris = radiohead.recvfromAck(buf, l, timeout, src)
-        if ris > 0:
-            return (ffi.string(buf), l[0], src[0])
-        else:
-            return ("", -1, -1)
+    def recvfrom_ack_timeout(self, timeout, ask_dst=True, ask_id=True, ask_flag=False):
+        _to = _id = _flag = ffi.NULL
+        if ask_dst:
+            _to = to_
+        if ask_id:
+            _id = id_
+        if ask_flag:
+            _flag = flag_
+        received = radiohead.recvfromAck(buffer_, length_, from_, _to, _id, _flag)
+        if received:
+            extras = [extra[0] for extra in [to_, id_, flag_] if extra != ffi.NULL]
+            return (ffi.string(buffer_), length_[0], from_[0], *extras)
+        raise ValueError("No valid message copied to the buffer")
 
-    def sendto_wait(self, data, l, dst):
-        return radiohead.sendtoWait(data, l, dst)
+    def sendto_wait(self, data, length, dst):
+        return radiohead.sendtoWait(data, length, dst)
 
     def retries(self):
         return radiohead.retries()
@@ -121,7 +125,7 @@ class RF95:
         radiohead.resetRetransmissions()
 
     def set_timeout(self, timeout):
-        radiohead.setTimeout(timeout)
+        radiohead.setTimeout(int(timeout))
 
     def set_mode_idle(self):
         radiohead.setModeIdle()
