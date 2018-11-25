@@ -15,7 +15,6 @@ Welcome to pyRadioHead_RF95's documentation!
    low_level
 
 
-
 Indices and tables
 ==================
 
