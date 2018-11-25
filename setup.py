@@ -22,6 +22,7 @@ radiohead_module = Extension(
     include_dirs=["/usr/local/include", include_dir],
     libraries=["bcm2835"],
     sources=cpp_sources,
+    optional=True
 )
 
 
