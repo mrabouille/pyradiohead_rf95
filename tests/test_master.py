@@ -21,7 +21,7 @@ def chunks(l, n):
 
 
 if __name__ == "__main__":
-    master_radio = Radio(adress=1)
+    master_radio = Radio(address=1)
     text = """Le Capitaine Jonathan,
 Etant âgé de dix-huit ans
 Capture un jour un pélican

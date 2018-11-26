@@ -2,10 +2,8 @@
 # coding=utf-8
 
 import logging
-from radio import Radio
+from pyradiohead_rf95.radio import Radio
 import time
-import operator
-from packet_pb2 import Packet
 
 log = logging.getLogger()
 log.setLevel("DEBUG")
@@ -35,11 +33,9 @@ Si l'on ne fait pas d'omelette avant. """
 
 
 if __name__ == "__main__":
-    radio = Radio(adress=2, listening_ratio=.9)
+    radio = Radio(address=2, listening_ratio=.9)
     text = {}
-    while True:
-        message = radio.receive()
-        print(message)
+    for message in radio.receiver_stream:
         if message is None:
             continue
         if message.payload == False:
