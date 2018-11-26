@@ -51,6 +51,8 @@ class RF95:
         return r
 
     def set_spreading_factor(self, sf):
+        if sf not in self.available_spreading_factor:
+            raise ValueError("Spreading factor not allowed. See RH95.available_spreading_factor")
         radiohead.setSpreadingFactor(sf)
 
     def set_signal_bandwidth(self, sbw):
@@ -66,8 +68,8 @@ class RF95:
     def manager_init(self, address):
         radiohead.managerInit(address)
 
-    def send(self, data, length_):
-        r = radiohead.send(data, length_)
+    def send(self, data, length):
+        r = radiohead.send(data, length)
         if r != 0:
             raise RuntimeError("nRF24 send failed")
 
@@ -94,10 +96,6 @@ class RF95:
 
     def sleep(self):
         radiohead.enterSleepMode()
-
-    @property
-    def last_seen_ids(self):
-        return radiohead._seedIds()
 
     def recvfrom_ack(self):
         received = radiohead.recvfromAck(buffer_, length_, from_, to_, id_, flag_)
