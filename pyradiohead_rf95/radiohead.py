@@ -80,7 +80,7 @@ class RF95:
         radiohead.waitAvailableTimeout()
 
     @property
-    def available(self):
+    def message_available(self):
         return bool(radiohead.available())
 
     def recv(self):
