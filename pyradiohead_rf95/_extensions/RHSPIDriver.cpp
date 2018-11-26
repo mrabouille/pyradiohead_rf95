@@ -1,7 +1,7 @@
 // RHSPIDriver.cpp
 //
 // Copyright (C) 2014 Mike McCauley
-// $Id: RHSPIDriver.cpp,v 1.11 2017/11/06 00:04:08 mikem Exp $
+// $Id: RHSPIDriver.cpp,v 1.10 2015/12/16 04:55:33 mikem Exp $
 
 #include <RHSPIDriver.h>
 
@@ -53,12 +53,10 @@ uint8_t RHSPIDriver::spiWrite(uint8_t reg, uint8_t val)
     uint8_t status = 0;
     RPI_CE0_CE1_FIX;
     ATOMIC_BLOCK_START;
-    _spi.beginTransaction();
     digitalWrite(_slaveSelectPin, LOW);
     status = _spi.transfer(reg | RH_SPI_WRITE_MASK); // Send the address with the write mask on
     _spi.transfer(val); // New value follows
     digitalWrite(_slaveSelectPin, HIGH);
-    _spi.endTransaction();
     ATOMIC_BLOCK_END;
     return status;
 }
@@ -68,13 +66,11 @@ uint8_t RHSPIDriver::spiBurstRead(uint8_t reg, uint8_t* dest, uint8_t len)
     uint8_t status = 0;
     RPI_CE0_CE1_FIX;
     ATOMIC_BLOCK_START;
-    _spi.beginTransaction();
     digitalWrite(_slaveSelectPin, LOW);
     status = _spi.transfer(reg & ~RH_SPI_WRITE_MASK); // Send the start address with the write mask off
     while (len--)
 	*dest++ = _spi.transfer(0);
     digitalWrite(_slaveSelectPin, HIGH);
-    _spi.endTransaction();
     ATOMIC_BLOCK_END;
     return status;
 }
@@ -84,13 +80,11 @@ uint8_t RHSPIDriver::spiBurstWrite(uint8_t reg, const uint8_t* src, uint8_t len)
     uint8_t status = 0;
     RPI_CE0_CE1_FIX;
     ATOMIC_BLOCK_START;
-    _spi.beginTransaction();
     digitalWrite(_slaveSelectPin, LOW);
     status = _spi.transfer(reg | RH_SPI_WRITE_MASK); // Send the start address with the write mask on
     while (len--)
 	_spi.transfer(*src++);
     digitalWrite(_slaveSelectPin, HIGH);
-    _spi.endTransaction();
     ATOMIC_BLOCK_END;
     return status;
 }
@@ -99,9 +93,4 @@ void RHSPIDriver::setSlaveSelectPin(uint8_t slaveSelectPin)
 {
     _slaveSelectPin = slaveSelectPin;
 }
-
-void RHSPIDriver::spiUsingInterrupt(uint8_t interruptNumber)
-{
-    _spi.usingInterrupt(interruptNumber);
-}
-
+ 
