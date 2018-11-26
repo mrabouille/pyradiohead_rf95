@@ -9,6 +9,7 @@ This is a slightly rewritten fork from [exmorse](https://github.com/exmorse/pyRa
 bcm2835 have to be installed first, with the following steps (up to you to change the bcm2835 version, it has been tested with the one below):
 
 ```bash
+OLD_PWD=$PWD
 cd /tmp/
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.57.tar.gz .
 tar zxvf bcm2835-1.57.tar.gz
@@ -17,6 +18,7 @@ cd bcm2835-1.57
 make
 sudo make check
 sudo make install
+cd $OLD_PWD
 ```
 
 ## `pyradiohead_rf95` installation
