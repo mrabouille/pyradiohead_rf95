@@ -2,7 +2,7 @@
 # coding=utf-8
 
 import logging
-from radio import Radio
+from pyradiohead_rf95.radio import Radio
 import itertools
 
 log = logging.getLogger()
