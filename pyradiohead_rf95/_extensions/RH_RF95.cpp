@@ -580,7 +580,7 @@ void RH_RF95::enableTCXO()
     } 
 }
 
-void RH_RF95::setPin(uint8_t pin, bool state)
-{
-	pinWrite(pin, state);
-}
+// void RH_RF95::setPin(uint8_t pin, bool state)
+// {
+// 	pinWrite(pin, state);
+// }
