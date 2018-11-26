@@ -32,8 +32,8 @@ int setModeTx();
 int setModeRx();
 int managerInit(int address);
 int sendtoWait(uint8_t* data, uint8_t len, uint8_t dst);
-int recvfromAck(char* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags);
-int recvfromAckTimeout(char* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags);
+int recvfromAck(char* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, int8_t* rssi);
+int recvfromAckTimeout(char* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, int8_t* rssi);
 int setTimeout(uint16_t timeout);
 int retries();
 int setRetries(uint8_t retries);
@@ -42,7 +42,8 @@ int resetRetransmissions();
 int headerFrom();
 int headerTo();
 int headerId();
-int headerFlags();"""
+int headerFlags();
+int lastRssi();"""
 )
 
 compiler = platform.python_implementation().lower()

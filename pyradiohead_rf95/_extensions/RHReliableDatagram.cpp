@@ -125,14 +125,15 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, int8_t* rssi)
 {  
     uint8_t _from;
     uint8_t _to;
     uint8_t _id;
     uint8_t _flags;
+	int8_t _rssi;
     // Get the message before its clobbered by the ACK (shared rx and tx buffer in some drivers
-    if (available() && recvfrom(buf, len, &_from, &_to, &_id, &_flags))
+    if (available() && recvfrom(buf, len, &_from, &_to, &_id, &_flags, &_rssi))
     {
 	// Never ACK an ACK
 	if (!(_flags & RH_FLAGS_ACK))
@@ -156,7 +157,7 @@ bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, 
 		if (from)  *from =  _from;
 		if (to)    *to =    _to;
 		if (id)    *id =    _id;
-		if (flags) *flags = _flags;
+		if (rssi) *rssi = _rssi;
 		_seenIds[_from] = _id;
 		return true;
 	    }
@@ -167,7 +168,7 @@ bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, 
     return false;
 }
 
-bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, int8_t* rssi)
 {
     unsigned long starttime = millis();
     int32_t timeLeft;
@@ -175,7 +176,7 @@ bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t
     {
 	if (waitAvailableTimeout(timeLeft))
 	{
-	    if (recvfromAck(buf, len, from, to, id, flags))
+	    if (recvfromAck(buf, len, from, to, id, rssi))
 		return true;
 	}
 	YIELD;

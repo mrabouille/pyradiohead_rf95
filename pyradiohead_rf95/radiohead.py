@@ -14,8 +14,8 @@ to_ = ffi.new("uint8_t*")
 to_[0] = 0
 id_ = ffi.new("uint8_t*")
 id_[0] = 0
-flag_ = ffi.new("uint8_t*")
-flag_[0] = 0
+rssi_ = ffi.new("int8_t*")
+rssi_[0] = 0
 
 
 class RF95:
@@ -98,21 +98,21 @@ class RF95:
         radiohead.enterSleepMode()
 
     def recvfrom_ack(self):
-        received = radiohead.recvfromAck(buffer_, length_, from_, to_, id_, flag_)
+        received = radiohead.recvfromAck(buffer_, length_, from_, to_, id_, rssi_)
         if received:
             extras = {
                 key: extra[0]
-                for key, extra in zip(["dest", "id", "flag"], [to_, id_, flag_])
+                for key, extra in zip(["dest", "id", "rssi"], [to_, id_, rssi_])
             }
             return (ffi.string(buffer_), length_[0], from_[0], extras)
         raise ValueError("No valid message copied to the buffer")
 
-    def recvfrom_ack_timeout(self, timeout, ask_dst=True, ask_id=True, ask_flag=False):
-        received = radiohead.recvfromAck(buffer_, length_, from_, to_, id_, flag_)
+    def recvfrom_ack_timeout(self, timeout, ask_dst=True, ask_id=True, ask_rssi=False):
+        received = radiohead.recvfromAck(buffer_, length_, from_, to_, id_, rssi_)
         if received:
             extras = {
                 key: extra[0]
-                for key, extra in zip(["dest", "id", "flag"], [to_, id_, flag_])
+                for key, extra in zip(["dest", "id", "rssi"], [to_, id_, rssi_])
             }
             return (ffi.string(buffer_), length_[0], from_[0], extras)
         raise ValueError("No valid message copied to the buffer")
@@ -145,3 +145,6 @@ class RF95:
 
     def set_mode_rx(self):
         radiohead.setModeRx()
+
+    def last_rssi(self):
+        return radiohead.lastRssi()
