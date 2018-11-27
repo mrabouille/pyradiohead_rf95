@@ -85,7 +85,7 @@ class RF95:
 
     def recv(self):
         radiohead.recv(buffer_, length_)
-        return (ffi.string(buffer_), length_[0])
+        return (ffi.unpack(buffer_, length_[0])[:length_[0]], length_[0])
 
     @property
     def max_message_length(self):
@@ -104,7 +104,7 @@ class RF95:
                 key: extra[0]
                 for key, extra in zip(["dest", "id", "rssi"], [to_, id_, rssi_])
             }
-            return (ffi.string(buffer_), length_[0], from_[0], extras)
+            return (ffi.unpack(buffer_, length_[0])[:length_[0]], length_[0], from_[0], extras)
         raise ValueError("No valid message copied to the buffer")
 
     def recvfrom_ack_timeout(self, timeout, ask_dst=True, ask_id=True, ask_rssi=False):
@@ -114,7 +114,7 @@ class RF95:
                 key: extra[0]
                 for key, extra in zip(["dest", "id", "rssi"], [to_, id_, rssi_])
             }
-            return (ffi.string(buffer_), length_[0], from_[0], extras)
+            return (ffi.unpack(buffer_, length_[0])[:length_[0]], length_[0], from_[0], extras)
         raise ValueError("No valid message copied to the buffer")
 
     def sendto_wait(self, data, length, dst):
