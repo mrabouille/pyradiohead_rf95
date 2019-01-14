@@ -45,7 +45,7 @@ int headerId();
 int headerFlags();"""
 )
 
-pkg_files = resource_listdir("pyradiohead_rf9", ".")
+pkg_files = resource_listdir("pyradiohead_rf95", ".")
 dll_file = [file for file in pkg_files if "so" in file][0]
 try:
     lib = ffi.dlopen(dll_file)
