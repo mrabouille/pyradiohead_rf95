@@ -52,6 +52,4 @@ dll_file = resource_filename("pyradiohead_rf95", "libradiohead.%s.so" % dll_name
 try:
     lib = ffi.dlopen(dll_file)
 except OSError:
-    warnings.warn("Link failed with the RadioHead C++ library. Try to reinstall the lib.", category=ImportWarning)
-    from unittest.mock import MagicMock
-    lib = MagicMock()
+    raise OSError("Link failed with the RadioHead C++ library. Try to reinstall the lib.")
