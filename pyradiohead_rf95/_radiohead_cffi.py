@@ -5,7 +5,7 @@ from pathlib import Path
 
 import warnings
 from cffi import FFI
-from pkg_resources import resource_filename
+from pkg_resources import resource_listdir
 import platform
 
 module_name = "_radiohead_cffi"
