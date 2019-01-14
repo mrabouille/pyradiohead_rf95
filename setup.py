@@ -54,7 +54,7 @@ setup(
     zip_safe=False,
     packages=find_packages(),
     setup_requires=["cffi>=1.0.0"],
-    install_requires=["cffi>=1.0.0"],
+    install_requires=["cffi>=1.0.0", "ujson"],
     ext_package='pyradiohead_rf95',
     ext_modules=[radiohead_module],
     include_package_data=True,
