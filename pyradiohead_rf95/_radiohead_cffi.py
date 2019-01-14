@@ -45,10 +45,8 @@ int headerId();
 int headerFlags();"""
 )
 
-compiler = platform.python_implementation().lower()
-pyver = "".join(platform.python_version_tuple()[:2])
-dll_name = "{compiler}-{pyver}m".format(compiler=compiler, pyver=pyver)
-dll_file = resource_filename("pyradiohead_rf95", "libradiohead.%s.so" % dll_name)
+pkg_files = resource_listdir("pyradiohead_rf9", ".")
+dll_file = [file for file in pkg_files if "so" in file][0]
 try:
     lib = ffi.dlopen(dll_file)
 except OSError:
