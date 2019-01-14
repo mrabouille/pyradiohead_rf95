@@ -5,7 +5,7 @@ from pathlib import Path
 
 import warnings
 from cffi import FFI
-from pkg_resources import resource_listdir
+from pkg_resources import resource_listdir, resource_filename
 import platform
 
 module_name = "_radiohead_cffi"
@@ -46,7 +46,8 @@ int headerFlags();"""
 )
 
 pkg_files = resource_listdir("pyradiohead_rf95", ".")
-dll_file = [file for file in pkg_files if "so" in file][0]
+dll_filename = [file for file in pkg_files if "so" in file][0]
+dll_file = resource_filename("pyradiohead_rf95", dll_filename)
 try:
     lib = ffi.dlopen(dll_file)
 except OSError:
