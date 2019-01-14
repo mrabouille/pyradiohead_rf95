@@ -40,7 +40,7 @@ class RF95:
 
     def init(self):
         r = radiohead.init()
-        if r != 0:
+        if r != 1:
             raise RuntimeError("RF95 init failed - value: %i" % r)
 
     def set_tx_power(self, power, useRFO):
