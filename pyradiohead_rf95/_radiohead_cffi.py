@@ -5,7 +5,7 @@ from pathlib import Path
 
 import warnings
 from cffi import FFI
-from pkg_resources import resource_filename
+from pkg_resources import resource_listdir, resource_filename
 import platform
 
 module_name = "_radiohead_cffi"
@@ -46,13 +46,10 @@ int headerFlags();
 int lastRssi();"""
 )
 
-compiler = platform.python_implementation().lower()
-pyver = "".join(platform.python_version_tuple()[:2])
-dll_name = "{compiler}-{pyver}m".format(compiler=compiler, pyver=pyver)
-dll_file = resource_filename("pyradiohead_rf95", "libradiohead.%s.so" % dll_name)
+pkg_files = resource_listdir("pyradiohead_rf95", ".")
+dll_filename = [file for file in pkg_files if "so" in file][0]
+dll_file = resource_filename("pyradiohead_rf95", dll_filename)
 try:
     lib = ffi.dlopen(dll_file)
 except OSError:
-    warnings.warn("Link failed with the RadioHead C++ library. Try to reinstall the lib.", category=ImportWarning)
-    from unittest.mock import MagicMock
-    lib = MagicMock()
+    raise OSError("Link failed with the RadioHead C++ library. Try to reinstall the lib.")
