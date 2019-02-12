@@ -8,7 +8,7 @@
 
 // Dragino Raspberry PI hat
 // see https://github.com/dragino/Lora
-#define BOARD_LORASPI
+#define BOARD_BREAKOUT_PI
 
 // Now we include RasPi_Boards.h so this will expose defined 
 // constants with CS/IRQ/RESET/on board LED pins definition
