@@ -15,7 +15,7 @@
 #define RF_RST_PIN RPI_V2_GPIO_P1_18 // IRQ on GPIO24 so P1 connector pin #18
 
 // Modified pin to fit Breakout Pi+3 board from ABElectronics
-#if defined (BOARD_BREAKOUT_PI)
+#elif defined (BOARD_BREAKOUT_PI)
 #define RF_LED_PIN RPI_V2_GPIO_P1_31 // Led on GPIO6 so P1 connector pin #31
 #define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on CE0 so GPIO8 P1 connector pin #24
 #define RF_IRQ_PIN RPI_V2_GPIO_P1_22 // IRQ on GPIO25 so P1 connector pin #22
