@@ -85,7 +85,7 @@ public:
     /// \param[in] flags If present and not NULL, the referenced uint8_t will be set to the FLAGS
     /// (not just those addressed to this node).
     /// \return true if a valid message was copied to buf
-    bool recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from = NULL, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL);
+    bool recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from = NULL, uint8_t* to = NULL, uint8_t* id = NULL, uint8_t* flags = NULL, int8_t* rssi = NULL);
 
     /// Tests whether a new message is available
     /// from the Driver.
@@ -146,6 +146,10 @@ public:
     /// Returns the FLAGS header of the last received message
     /// \return The FLAGS header of the most recently received message.
     uint8_t        headerFlags();
+
+    /// Returns the RSSI of the last received message
+    /// \return The RSSI of the most recently received message.
+    int8_t        lastRssi();
 
     /// Returns the address of this node.
     /// \return The address of this node

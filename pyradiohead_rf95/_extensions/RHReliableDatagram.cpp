@@ -9,7 +9,7 @@
 //
 // Author: Mike McCauley (mikem@airspayce.com)
 // Copyright (C) 2011 Mike McCauley
-// $Id: RHReliableDatagram.cpp,v 1.16 2017/01/12 23:58:00 mikem Exp $
+// $Id: RHReliableDatagram.cpp,v 1.18 2018/11/08 02:31:43 mikem Exp $
 
 #include <RHReliableDatagram.h>
 
@@ -53,7 +53,22 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
     while (retries++ <= _retries)
     {
 	setHeaderId(thisSequenceNumber);
-	setHeaderFlags(RH_FLAGS_NONE, RH_FLAGS_ACK); // Clear the ACK flag
+
+        // Set and clear header flags depending on if this is an
+        // initial send or a retry.
+        uint8_t headerFlagsToSet = RH_FLAGS_NONE;
+        // Always clear the ACK flag
+        uint8_t headerFlagsToClear = RH_FLAGS_ACK;
+        if (retries == 1) {
+            // On an initial send, clear the RETRY flag in case
+            // it was previously set
+            headerFlagsToClear |= RH_FLAGS_RETRY;
+        } else {
+            // Not an initial send, set the RETRY flag
+            headerFlagsToSet = RH_FLAGS_RETRY;
+        }
+        setHeaderFlags(headerFlagsToSet, headerFlagsToClear);
+
 	sendto(buf, len, address);
 	waitPacketSent();
 
@@ -110,32 +125,39 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
 }
 
 ////////////////////////////////////////////////////////////////////
-bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, int8_t* rssi)
 {  
     uint8_t _from;
     uint8_t _to;
     uint8_t _id;
     uint8_t _flags;
+	int8_t _rssi;
     // Get the message before its clobbered by the ACK (shared rx and tx buffer in some drivers
-    if (available() && recvfrom(buf, len, &_from, &_to, &_id, &_flags))
+    if (available() && recvfrom(buf, len, &_from, &_to, &_id, &_flags, &_rssi))
     {
 	// Never ACK an ACK
 	if (!(_flags & RH_FLAGS_ACK))
 	{
-	    // Its a normal message for this node, not an ACK
-	    if (_to != RH_BROADCAST_ADDRESS)
+	    // Its a normal message not an ACK
+	    if (_to ==_thisAddress)
 	    {
+	        // Its for this node and
 		// Its not a broadcast, so ACK it
 		// Acknowledge message with ACK set in flags and ID set to received ID
 		acknowledge(_id, _from);
 	    }
-	    // If we have not seen this message before, then we are interested in it
-	    if (_id != _seenIds[_from])
+            // Filter out retried messages that we have seen before. This explicitly
+            // only filters out messages that are marked as retries to protect against
+            // the scenario where a transmitting device sends just one message and
+            // shuts down between transmissions. Devices that do this will report the
+            // the same ID each time since their internal sequence number will reset
+            // to zero each time the device starts up.
+	    if ((RH_ENABLE_EXPLICIT_RETRY_DEDUP && !(_flags & RH_FLAGS_RETRY)) || _id != _seenIds[_from])
 	    {
 		if (from)  *from =  _from;
 		if (to)    *to =    _to;
 		if (id)    *id =    _id;
-		if (flags) *flags = _flags;
+		if (rssi) *rssi = _rssi;
 		_seenIds[_from] = _id;
 		return true;
 	    }
@@ -146,7 +168,7 @@ bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, 
     return false;
 }
 
-bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t timeout, uint8_t* from, uint8_t* to, uint8_t* id, int8_t* rssi)
 {
     unsigned long starttime = millis();
     int32_t timeLeft;
@@ -154,7 +176,7 @@ bool RHReliableDatagram::recvfromAckTimeout(uint8_t* buf, uint8_t* len, uint16_t
     {
 	if (waitAvailableTimeout(timeLeft))
 	{
-	    if (recvfromAck(buf, len, from, to, id, flags))
+	    if (recvfromAck(buf, len, from, to, id, rssi))
 		return true;
 	}
 	YIELD;

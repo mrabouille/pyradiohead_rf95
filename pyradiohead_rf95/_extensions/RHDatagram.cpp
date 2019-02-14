@@ -36,7 +36,7 @@ bool RHDatagram::sendto(uint8_t* buf, uint8_t len, uint8_t address)
     return _driver.send(buf, len);
 }
 
-bool RHDatagram::recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags)
+bool RHDatagram::recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to, uint8_t* id, uint8_t* flags, int8_t* rssi)
 {
     if (_driver.recv(buf, len))
     {
@@ -44,6 +44,7 @@ bool RHDatagram::recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to
 	if (to)    *to =    headerTo();
 	if (id)    *id =    headerId();
 	if (flags) *flags = headerFlags();
+    if (rssi) *rssi = lastRssi();
 	return true;
     }
     return false;
@@ -119,5 +120,7 @@ uint8_t RHDatagram::headerFlags()
     return _driver.headerFlags();
 }
 
-
-
+int8_t RHDatagram::lastRssi()
+{
+    return _driver.lastRssi();
+}
